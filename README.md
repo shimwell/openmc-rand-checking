@@ -1,71 +1,76 @@
 # Random Number Generator Testing for OpenMC
 
-This directory contains tests to verify the correctness of OpenMC's random number generator (PCG-RXS-M-XS based on LCG).
+**Purpose:** Verify the correctness of the random number generator implemented in OpenMC based on Linear Congruential Generators (LCGs).
+
+## Installation
+
+### 1. Install Python Dependencies
+
+```bash
+pip install numpy scipy
+```
+
+### 2. Build TestU01 (for Test Case 2)
+
+TestU01 is already included in this repository. Build it:
+
+```bash
+cd TestU01-1.2.3
+./configure
+make
+cd ..
+```
+
+## Running the Tests
+
+Run both test cases with a single command:
+
+```bash
+./run_tests.sh
+```
+
+This will execute:
+- **Test Case 1:** Knuth's Statistical Tests
+- **Test Case 2:** Generate binary random stream for DIEHARD/TestU01
 
 ## Test Cases
 
-### Test Case 1: Knuth's Statistical Tests ✓
-**File:** `rand.py`
+### Test Case 1: Knuth's Statistical Tests
 
-Implements the standard statistical tests described by Knuth (Volume 2, Section 3.3):
+Implements standard statistical tests described by Knuth [13] and variations [14]:
 - Equidistribution Test (Frequency Test)
 - Serial Test (2D Correlation)
 - Gap Test
 - Poker Test
 - Runs Test (Monotonicity)
 
-**Run:**
+**Acceptance Criteria:** All tests should have p-value > 0.01
+
+### Test Case 2: Marsaglia's DIEHARD Test Suite
+
+Generates binary random stream file (`random_stream.bin`) for testing with DIEHARD/TestU01 [15].
+
+**Acceptance Criteria:** Should pass all test batteries with no systematic failures.
+
+After generating the stream, apply DIEHARD/TestU01 tests:
 ```bash
-python rand.py
+# Option 1: Use dieharder (if installed)
+dieharder -a -g 201 -f random_stream.bin
+
+# Option 2: Use TestU01 library (in TestU01-1.2.3/)
+# Create custom test program using TestU01 API
 ```
 
-### Test Case 2: DIEHARD Test Suite
-**File:** `diehard_generator.py`
-
-Generates binary random stream files for use with Marsaglia's DIEHARD test suite.
-
-**Steps:**
-
-1. Generate binary random stream:
-```bash
-python diehard_generator.py
-```
-
-2. Install DIEHARD (or use TestU01 which includes similar tests):
-
-**Option A: DIEHARD** (original, but harder to find)
-- Download from: http://www.stat.fsu.edu/pub/diehard/
-- Compile and run on `random_stream.bin`
-
-**Option B: TestU01** (recommended - modern replacement)
-```bash
-# Install TestU01
-wget http://simul.iro.umontreal.ca/testu01/TestU01.zip
-unzip TestU01.zip
-cd TestU01-*
-./configure
-make
-sudo make install
-```
-
-3. Run TestU01 tests on generated stream:
-```bash
-python testu01_wrapper.py
-```
-
-## Acceptance Criteria
-
-- **Knuth Tests**: All tests should have p-value > 0.01
-- **DIEHARD/TestU01**: Should pass all batteries with no systematic failures
+**Note:** Use `-g 201` for raw binary files (not `-g 202` which expects ASCII format)
 
 ## Test Method
 
 1. Random stream generating program uses OpenMC's LCG implementation via `openmc.lib.prn()`
 2. Statistical tests are applied to the generated random stream
-3. If both test cases pass acceptance criteria, the random number generator is considered acceptable
+3. If both test cases pass acceptance criteria, the RNG is verified as correct
 
 ## References
 
-- [13] Knuth, D. E. (1997). The Art of Computer Programming, Volume 2: Seminumerical Algorithms (3rd ed.)
+- [13] Knuth, D. E. (1997). *The Art of Computer Programming, Volume 2: Seminumerical Algorithms* (3rd ed.)
 - [14] Variations on Knuth's statistical tests
-- [15] Marsaglia, G. (1995). DIEHARD: A Battery of Tests of Randomness
+- [15] Marsaglia, G. (1995). *DIEHARD: A Battery of Tests of Randomness*
