@@ -7,19 +7,16 @@
 ### 1. Install Python Dependencies
 
 ```bash
-pip install numpy scipy
+pip install openmc numpy scipy
 ```
 
-### 2. Build TestU01 (for Test Case 2)
-
-TestU01 is already included in this repository. Build it:
+### 2. Install dieharder (Optional - for Test Case 2)
 
 ```bash
-cd TestU01-1.2.3
-./configure
-make
-cd ..
+sudo apt install dieharder
 ```
+
+**Note:** The `run_tests.sh` script will automatically run dieharder tests if installed, or skip them if not available.
 
 ## Running the Tests
 
@@ -31,7 +28,7 @@ Run both test cases with a single command:
 
 This will execute:
 - **Test Case 1:** Knuth's Statistical Tests
-- **Test Case 2:** Generate binary random stream for DIEHARD/TestU01
+- **Test Case 2:** Generate binary random stream and run DIEHARD tests (if dieharder is installed)
 
 ## Test Cases
 
@@ -48,20 +45,17 @@ Implements standard statistical tests described by Knuth [13] and variations [14
 
 ### Test Case 2: Marsaglia's DIEHARD Test Suite
 
-Generates binary random stream file (`random_stream.bin`) for testing with DIEHARD/TestU01 [15].
+Generates binary random stream file (`random_stream.bin`) for testing with DIEHARD [15].
 
 **Acceptance Criteria:** Should pass all test batteries with no systematic failures.
 
-After generating the stream, apply DIEHARD/TestU01 tests:
+The `run_tests.sh` script automatically runs dieharder tests if installed. Manual testing:
 ```bash
-# Option 1: Use dieharder (if installed)
+# Use dieharder
 dieharder -a -g 201 -f random_stream.bin
-
-# Option 2: Use TestU01 library (in TestU01-1.2.3/)
-# Create custom test program using TestU01 API
 ```
 
-**Note:** Use `-g 201` for raw binary files (not `-g 202` which expects ASCII format)
+**Note:** Use `-g 201` for raw binary files
 
 ## Test Method
 
