@@ -4,11 +4,11 @@
 
 ## Installation
 
-### 1. Install Python Dependencies
+### 1. Install OpenMC from this branch
 
-```bash
-pip install openmc numpy scipy
-```
+expose-rand-number-to-openmc.lib
+
+https://github.com/shimwell/openmc/tree/expose-rand-number-to-openmc.lib
 
 ### 2. Install dieharder (Optional - for Test Case 2)
 
